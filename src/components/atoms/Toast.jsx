@@ -50,8 +50,8 @@ const Toast = ({
   return (
     <div 
       className={`
-        flex items-start gap-3 p-4 rounded-lg border-l-4 shadow-lg
-        min-w-[300px] max-w-md
+        w-full max-w-lg sm:max-w-xl md:max-w-2xl
+        flex items-center gap-2 px-4 py-3 rounded-md border-l-4 shadow-sm
         animate-[slideIn_0.3s_ease-out]
         ${typeStyles[type] || typeStyles.info}
       `}

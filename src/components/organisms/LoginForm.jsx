@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import FormField from "../molecules/FormField";
 import Button from "../atoms/Button";
+import { useToast } from "../../hooks/useToast";
 
 const LoginForm = ({ onSubmit, onForgotPassword }) => {
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: "",
   });
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const toast = useToast();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,7 +20,6 @@ const LoginForm = ({ onSubmit, onForgotPassword }) => {
       [name]: value,
     }));
 
-    // Limpiar error cuando el usuario empieza a escribir
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -30,16 +31,12 @@ const LoginForm = ({ onSubmit, onForgotPassword }) => {
   const validate = () => {
     const newErrors = {};
 
-    if (!formData.email) {
-      newErrors.email = "El email es requerido";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "El email no es válido";
+    if (!formData.username) {
+      newErrors.username = "El usuario es requerido";
     }
 
     if (!formData.password) {
       newErrors.password = "La contraseña es requerida";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "La contraseña debe tener al menos 6 caracteres";
     }
 
     return newErrors;
@@ -52,6 +49,9 @@ const LoginForm = ({ onSubmit, onForgotPassword }) => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      // Mostrar errores por toast
+      const messages = Object.values(newErrors);
+      messages.forEach((m) => toast.error(m));
       return;
     }
 
@@ -60,9 +60,7 @@ const LoginForm = ({ onSubmit, onForgotPassword }) => {
     try {
       await onSubmit(formData);
     } catch (error) {
-      setErrors({
-        submit: error.message || "Error al iniciar sesión",
-      });
+      toast.error(error.message || "Error al iniciar sesión");
     } finally {
       setLoading(false);
     }
@@ -76,15 +74,14 @@ const LoginForm = ({ onSubmit, onForgotPassword }) => {
       </div>
 
       <FormField
-        label="Email"
-        name="email"
-        type="email"
-        value={formData.email}
+        label="Usuario"
+        name="username"
+        type="text"
+        value={formData.username}
         onChange={handleChange}
-        placeholder="tu@email.com"
-        error={errors.email}
+        placeholder="tu_usuario"
         required
-        autoComplete="email"
+        autoComplete="username"
       />
 
       <FormField
@@ -94,16 +91,9 @@ const LoginForm = ({ onSubmit, onForgotPassword }) => {
         value={formData.password}
         onChange={handleChange}
         placeholder="••••••••"
-        error={errors.password}
         required
         autoComplete="current-password"
       />
-
-      {errors.submit && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-sm text-red-600">{errors.submit}</p>
-        </div>
-      )}
 
       <Button type="submit" fullWidth loading={loading} size="lg">
         Ingresar

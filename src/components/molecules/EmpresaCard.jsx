@@ -1,7 +1,23 @@
 import React from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import empresaService from "../../services/empresaService";
+import useToast from "../../hooks/useToast";
 import { IconCalendar, IconMail, IconPhone, IconHome, IconUser } from "../atoms/Icons";
 
 const EmpresaCard = ({ empresa }) => {
+  const navigate = useNavigate();
+  const toast = useToast();
+  const { mutate: seleccionar, isLoading } = useMutation({
+    mutationFn: () => empresaService.selectByRuc(empresa?.ruc),
+    onSuccess: () => {
+      toast.success("Empresa seleccionada correctamente");
+      navigate("/home");
+    },
+    onError: (e) => {
+      toast.error(e?.message || "No se pudo seleccionar la empresa");
+    }
+  });
   const {
     razonSocial,
     ruc,
@@ -98,6 +114,17 @@ const EmpresaCard = ({ empresa }) => {
         ) : (
           <div className="mt-1 text-sm text-gray-500">Sin representantes</div>
         )}
+      </div>
+
+      <div className="mt-6">
+        <button
+          type="button"
+          disabled={!empresa?.ruc || isLoading}
+          onClick={() => seleccionar()}
+          className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
+        >
+          {isLoading ? "Seleccionando..." : "Seleccionar esta empresa"}
+        </button>
       </div>
     </div>
   );

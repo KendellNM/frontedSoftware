@@ -26,12 +26,11 @@ const Sidebar = ({ open = false, onClose = () => {} }) => {
         <div className="h-14" />
         <div className="px-3 py-3">
           <nav className="flex flex-col gap-1">
-            <NavLink to="/empresas" className={linkClass} onClick={onClose}>
-              Empresas
+            <NavLink to="/elegir-empresa" className={linkClass} onClick={onClose}>
+              Elegir empresa
             </NavLink>
-
-            <NavLink to="/elegir-empresa/nueva" className={linkClass} onClick={onClose}>
-              Nueva empresa
+            <NavLink to="/practicas" className={linkClass} onClick={onClose}>
+              Ver mis prácticas
             </NavLink>
           </nav>
         </div>
